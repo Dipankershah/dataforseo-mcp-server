@@ -9,15 +9,15 @@ export function registerTool<T extends z.ZodRawShape>(
   server: McpServer,
   name: string,
   schema: T,
-  handler: (params: z.infer<z.ZodObject<T>>, client: DataForSeoClient) => Promise<any>
+  handler: (params: z.infer<z.ZodObject<T>>) => Promise<any>
 ) {
   server.tool(
     name,
-    schema,
-    async (params, _context) => {
+    "",
+    async (params) => {
       try {
         // We get the apiClient from the closure, not from context
-        const result = await handler(params as z.infer<z.ZodObject<T>>, _context.client as unknown as DataForSeoClient);
+        const result = await handler(params as z.infer<z.ZodObject<T>>);
         
         return {
           content: [
@@ -67,9 +67,9 @@ export function registerTaskTool<PostT extends z.ZodRawShape>(
   server: McpServer,
   baseName: string,
   postSchema: PostT,
-  postHandler: (params: z.infer<z.ZodObject<PostT>>, client: DataForSeoClient) => Promise<any>,
-  readyHandler: (client: DataForSeoClient) => Promise<any>,
-  getHandler: (id: string, client: DataForSeoClient) => Promise<any>
+  postHandler: (params: z.infer<z.ZodObject<PostT>>) => Promise<any>,
+  readyHandler: () => Promise<any>,
+  getHandler: (id: string) => Promise<any>
 ) {
   // Register POST tool
   registerTool(
@@ -84,7 +84,7 @@ export function registerTaskTool<PostT extends z.ZodRawShape>(
     server,
     `${baseName}_ready`,
     {},
-    (_params, client) => readyHandler(client)
+    (_params) => readyHandler()
   );
   
   // Register GET tool
@@ -92,6 +92,6 @@ export function registerTaskTool<PostT extends z.ZodRawShape>(
     server,
     `${baseName}_get`,
     { id: z.string() },
-    (params, client) => getHandler(params.id, client)
+    (params) => getHandler(params.id)
   );
 }

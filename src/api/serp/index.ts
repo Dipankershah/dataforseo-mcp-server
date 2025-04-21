@@ -10,7 +10,7 @@ import {
 } from "../types.js";
 
 // SERP Google Organic API schemas
-const googleOrganicLiveSchema = z.object({
+const googleOrganicLiveSchema = {
   keyword: z.string().describe("The search query or keyword"),
   location_code: z.number().describe("The location code for the search"),
   language_code: z.string().describe("The language code for the search"),
@@ -18,14 +18,15 @@ const googleOrganicLiveSchema = z.object({
   os: z.enum(["windows", "macos", "ios", "android"]).optional().describe("The operating system for the search"),
   depth: z.number().optional().describe("Maximum number of results to return"),
   se_domain: z.string().optional().describe("Search engine domain (e.g., google.com)")
-});
+};
 
-const googleOrganicTaskSchema = googleOrganicLiveSchema.extend({
+const googleOrganicTaskSchema = {
+  ...googleOrganicLiveSchema,
   priority: z.number().min(1).max(2).optional().describe("Task priority: 1 (normal) or 2 (high)"),
   tag: z.string().optional().describe("Custom identifier for the task"),
   postback_url: z.string().optional().describe("URL to receive a callback when the task is completed"),
   postback_data: z.string().optional().describe("Custom data to be passed in the callback")
-});
+}
 
 // Google Organic Types
 interface GoogleOrganicLiveResult {
@@ -53,8 +54,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_organic_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<GoogleOrganicLiveResult>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<GoogleOrganicLiveResult>>(
         "/serp/google/organic/live",
         [params]
       );
@@ -68,23 +69,23 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_organic_task",
     googleOrganicTaskSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<TaskPostResponse>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<TaskPostResponse>>(
         "/serp/google/organic/task_post",
         [params]
       );
       
       return response;
     },
-    async (client) => {
-      const response = await client.get<DataForSeoResponse<TaskReadyResponse>>(
+    async () => {
+      const response = await apiClient.get<DataForSeoResponse<TaskReadyResponse>>(
         "/serp/google/organic/tasks_ready"
       );
       
       return response;
     },
-    async (id, client) => {
-      const response = await client.get<DataForSeoResponse<TaskGetResponse<GoogleOrganicTaskResult>>>(
+    async (id) => {
+      const response = await apiClient.get<DataForSeoResponse<TaskGetResponse<GoogleOrganicTaskResult>>>(
         `/serp/google/organic/task_get/${id}`
       );
       
@@ -96,11 +97,12 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
   registerTool(
     server,
     "serp_google_maps_live",
-    googleOrganicLiveSchema.extend({
-      local_pack_type: z.enum(["maps", "local_pack"]).optional().describe("Type of local pack results")
-    }),
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    {
+      ...googleOrganicLiveSchema,
+      local_pack_type: z.enum(["maps", "local_pack"]).optional().describe("Type of local pack results"),
+    },
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/google/maps/live",
         [params]
       );
@@ -114,8 +116,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_images_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/google/images/live",
         [params]
       );
@@ -129,8 +131,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_news_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/google/news/live",
         [params]
       );
@@ -144,8 +146,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_jobs_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/google/jobs/live",
         [params]
       );
@@ -159,8 +161,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_shopping_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/google/shopping/live",
         [params]
       );
@@ -174,8 +176,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_bing_organic_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/bing/organic/live",
         [params]
       );
@@ -189,8 +191,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_yahoo_organic_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/yahoo/organic/live",
         [params]
       );
@@ -204,8 +206,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_baidu_organic_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/baidu/organic/live",
         [params]
       );
@@ -219,8 +221,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_youtube_organic_live",
     googleOrganicLiveSchema,
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/serp/youtube/organic/live",
         [params]
       );
@@ -236,12 +238,12 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     {
       country: z.string().optional().describe("Filter locations by country name")
     },
-    async (params, client) => {
+    async (params) => {
       const url = params.country 
         ? `/serp/google/locations?country=${encodeURIComponent(params.country)}`
         : "/serp/google/locations";
         
-      const response = await client.get<DataForSeoResponse<any>>(url);
+      const response = await apiClient.get<DataForSeoResponse<any>>(url);
       
       return response;
     }
@@ -252,8 +254,8 @@ export function registerSerpTools(server: McpServer, apiClient: DataForSeoClient
     server,
     "serp_google_languages",
     {},
-    async (_params, client) => {
-      const response = await client.get<DataForSeoResponse<any>>("/serp/google/languages");
+    async (_params) => {
+      const response = await apiClient.get<DataForSeoResponse<any>>("/serp/google/languages");
       
       return response;
     }

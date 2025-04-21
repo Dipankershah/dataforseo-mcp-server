@@ -62,3 +62,12 @@ export function setupApiClient(login: string, password: string): DataForSeoClien
   
   return client;
 }
+
+export function initializeApiClient(username: string, password: string) {
+  // Implementation of API client initialization
+  return {
+    username,
+    password,
+    // Add other client methods as needed
+  };
+}

@@ -9,15 +9,15 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_task_post",
-    z.object({
+    {
       target: z.string().describe("Target URL to analyze"),
       max_crawl_pages: z.number().optional().describe("Maximum number of pages to crawl"),
       load_resources: z.boolean().optional().describe("Load page resources"),
       enable_javascript: z.boolean().optional().describe("Enable JavaScript execution"),
       limit: z.number().optional().describe("Maximum number of results to return")
-    }),
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    },
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/on_page/task_post",
         [params]
       );
@@ -31,8 +31,8 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
     server,
     "onpage_tasks_ready",
     {},
-    async (_params, client) => {
-      const response = await client.get<DataForSeoResponse<any>>("/on_page/tasks_ready");
+    async (_params) => {
+      const response = await apiClient.get<DataForSeoResponse<any>>("/on_page/tasks_ready");
       
       return response;
     }
@@ -42,11 +42,11 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_summary",
-    z.object({
+    {
       id: z.string().describe("Task ID")
-    }),
-    async (params, client) => {
-      const response = await client.get<DataForSeoResponse<any>>(`/on_page/summary/${params.id}`);
+    },
+    async (params) => {
+      const response = await apiClient.get<DataForSeoResponse<any>>(`/on_page/summary/${params.id}`);
       
       return response;
     }
@@ -56,15 +56,15 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_pages",
-    z.object({
+    {
       id: z.string().describe("Task ID"),
       limit: z.number().optional().describe("Maximum number of results to return"),
       offset: z.number().optional().describe("Offset for pagination"),
       filters: z.array(z.any()).optional().describe("Array of filter objects")
-    }),
-    async (params, client) => {
+    },
+    async (params) => {
       const { id, ...restParams } = params;
-      const response = await client.post<DataForSeoResponse<any>>(
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         `/on_page/pages/${id}`,
         [restParams]
       );
@@ -77,16 +77,16 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_resources",
-    z.object({
+    {
       id: z.string().describe("Task ID"),
       url: z.string().describe("URL of the page to get resources for"),
       limit: z.number().optional().describe("Maximum number of results to return"),
       offset: z.number().optional().describe("Offset for pagination"),
       filters: z.array(z.any()).optional().describe("Array of filter objects")
-    }),
-    async (params, client) => {
+    },
+    async (params) => {
       const { id, ...restParams } = params;
-      const response = await client.post<DataForSeoResponse<any>>(
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         `/on_page/resources/${id}`,
         [restParams]
       );
@@ -99,11 +99,11 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_task_force_stop",
-    z.object({
+    {
       id: z.string().describe("Task ID")
-    }),
-    async (params, client) => {
-      const response = await client.post<DataForSeoResponse<any>>(
+    },
+    async (params) => {
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         "/on_page/task_force_stop",
         [{ id: params.id }]
       );
@@ -116,14 +116,14 @@ export function registerOnPageTools(server: McpServer, apiClient: DataForSeoClie
   registerTool(
     server,
     "onpage_duplicate_content",
-    z.object({
+    {
       id: z.string().describe("Task ID"),
       limit: z.number().optional().describe("Maximum number of results to return"),
       offset: z.number().optional().describe("Offset for pagination")
-    }),
-    async (params, client) => {
+    },
+    async (params) => {
       const { id, ...restParams } = params;
-      const response = await client.post<DataForSeoResponse<any>>(
+      const response = await apiClient.post<DataForSeoResponse<any>>(
         `/on_page/duplicate_content/${id}`,
         [restParams]
       );

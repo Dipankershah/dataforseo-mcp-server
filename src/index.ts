@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { initializeApiClient } from "./api/client.js";
+import { setupApiClient } from "./api/client.js";
 import { setupApiIntegrations } from "./api/integrations";
 
 class SeoAnalyticsServer {
@@ -24,7 +24,7 @@ class SeoAnalyticsServer {
       throw new Error("API credentials are required");
     }
 
-    this.apiClient = initializeApiClient(credentials.username, credentials.password);
+    this.apiClient = setupApiClient(credentials.username, credentials.password);
   }
 
   private async setupThirdPartyIntegrations() {
